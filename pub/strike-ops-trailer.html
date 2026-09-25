@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>STRIKE OPS — Bande-annonce</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100vw; height: 100vh;
+    background: #000;
+    overflow: hidden;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+  }
+
+  canvas {
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+  }
+
+  #overlay {
+    position: fixed; inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* TITRE STRIKE OPS */
+  #title {
+    font-size: 12vw;
+    font-weight: 900;
+    letter-spacing: 20px;
+    color: #fff;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: scale(0.3) rotate(-5deg);
+    text-shadow:
+      0 0 30px #00f0ff,
+      0 0 60px #00f0ff,
+      0 0 120px #00f0ff;
+    font-style: italic;
+    position: relative;
+  }
+
+  #title::before {
+    content: 'STRIKE OPS';
+    position: absolute;
+    inset: 0;
+    color: #ff006e;
+    z-index: -1;
+    animation: glitch 0.3s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+  }
+
+  #title::after {
+    content: 'STRIKE OPS';
+    position: absolute;
+    inset: 0;
+    color: #00f0ff;
+    z-index: -2;
+    animation: glitch 0.3s infinite reverse;
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+  }
+
+  @keyframes glitch {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-3px, 2px); }
+    50% { transform: translate(2px, -3px); }
+    75% { transform: translate(-2px, -2px); }
+  }
+
+  /* Sous-titres */
+  .sub {
+    position: absolute;
+    font-size: 2.5vw;
+    color: #fff;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: 0;
+    text-shadow: 0 0 20px #00f0ff;
+    font-style: italic;
+  }
+
+  #sub1 { top: 15%; }
+  #sub2 { bottom: 25%; }
+  #sub3 { bottom: 20%; color: #ff006e; text-shadow: 0 0 20px #ff006e; }
+
+  /* DISPONIBLE BIENTÔT */
+  #soon {
+    font-size: 6vw;
+    font-weight: 900;
+    letter-spacing: 15px;
+    color: #fff;
+    text-transform: uppercase;
+    opacity: 0;
+    text-shadow:
+      0 0 30px #ff006e,
+      0 0 60px #ff006e,
+      0 0 100px #ff006e;
+    font-style: italic;
+    position: absolute;
+    top: 55%;
+  }
+
+  /* PEGI */
+  #pegi {
+    position: absolute;
+    bottom: 5%;
+    right: 5%;
+    width: 90px;
+    height: 90px;
+    background: #fff;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    opacity: 0;
+    font-family: Arial, sans-serif;
+    font-weight: 900;
+  }
+
+  #pegi .num {
+    font-size: 40px;
+    line-height: 1;
+  }
+
+  #pegi .lbl {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  /* Scanlines */
+  #scanlines {
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15) 0px,
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.3;
+  }
+
+  /* Flash blanc */
+  #flash {
+    position: fixed; inset: 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Vignette */
+  #vignette {
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, #000 100%);
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  /* Bandes noires cinéma */
+  .bar {
+    position: fixed;
+    left: 0; right: 0;
+    background: #000;
+    z-index: 50;
+    transform: scaleY(0);
+    transition: transform 0.5s;
+  }
+  .bar.top { top: 0; height: 8%; transform-origin: top; }
+  .bar.bottom { bottom: 0; height: 8%; transform-origin: bottom; }
+  .bar.show { transform: scaleY(1); }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+<div class="bar top"></div>
+<div class="bar bottom"></div>
+
+<div id="overlay">
+  <div class="sub" id="sub1">TACTICAL FPS</div>
+  <div id="title">STRIKE OPS</div>
+  <div class="sub" id="sub2">LE COMBAT COMMENCE</div>
+  <div id="soon">DISPONIBLE BIENTÔT</div>
+  <div class="sub" id="sub3">SUR ANDROID</div>
+</div>
+
+<div id="pegi">
+  <div class="num">16</div>
+  <div class="lbl">PEGI</div>
+</div>
+
+<div id="flash"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// AUDIO SYNTHÉTISÉ (Web Audio API) — Sons de tir, explosion, click
+// ═══════════════════════════════════════════════════════
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+// Son de tir réaliste (bruit blanc filtré)
+function playGunshot() {
+  if (!audioCtx) return;
+  const duration = 0.15;
+  const now = audioCtx.currentTime;
+
+  // Bruit blanc
+  const bufferSize = audioCtx.sampleRate * duration;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.15));
+  }
+
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+
+  // Filtre passe-bas pour effet "boom"
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 800;
+  filter.Q.value = 1;
+
+  // Gain
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.6, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(now);
+  source.stop(now + duration);
+}
+
+// Explosion sourde
+function playExplosion() {
+  if (!audioCtx) return;
+  const duration = 0.8;
+  const now = audioCtx.currentTime;
+
+  const bufferSize = audioCtx.sampleRate * duration;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    const env = Math.exp(-i / (bufferSize * 0.3));
+    data[i] = (Math.random() * 2 - 1) * env;
+  }
+
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 200;
+
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.8, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(now);
+  source.stop(now + duration);
+}
+
+// Impact métallique
+function playMetalImpact() {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(2000, now);
+  osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.3, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 0.1);
+}
+
+// Bass drop (pour l'intro)
+function playBassDrop() {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(150, now);
+  osc.frequency.exponentialRampToValueAtTime(30, now + 1.5);
+
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.7, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + 1.5);
+}
+
+// Whoosh (transition)
+function playWhoosh() {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+
+  const bufferSize = audioCtx.sampleRate * 0.5;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (i / bufferSize);
+  }
+
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(200, now);
+  filter.frequency.exponentialRampToValueAtTime(3000, now + 0.5);
+  filter.Q.value = 2;
+
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.4, now);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(now);
+  source.stop(now + 0.5);
+}
+
+// ═══════════════════════════════════════════════════════
+// CANVAS — Fond animé (grille néon + particules)
+// ═══════════════════════════════════════════════════════
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Particules (étincelles)
+const particles = [];
+function spawnParticles(x, y, count, color) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 15,
+      vy: (Math.random() - 0.5) * 15,
+      life: 1,
+      color
+    });
+  }
+}
+
+// Grille néon perspective
+let gridOffset = 0;
+function drawGrid() {
+  ctx.save();
+  const horizon = H * 0.6;
+
+  // Dégradé de fond
+  const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W);
+  grad.addColorStop(0, '#0a0a1a');
+  grad.addColorStop(1, '#000');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grille verticale
+  ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+  ctx.lineWidth = 1;
+  for (let i = -20; i <= 20; i++) {
+    ctx.beginPath();
+    ctx.moveTo(W/2 + i * 40, H);
+    ctx.lineTo(W/2 + i * 8, horizon);
+    ctx.stroke();
+  }
+
+  // Grille horizontale qui défile
+  gridOffset = (gridOffset + 2) % 60;
+  for (let i = 0; i < 20; i++) {
+    const y = horizon + (i * 60 + gridOffset) * (i / 5);
+    if (y > H) break;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+
+  // Ligne d'horizon lumineuse
+  const horizonGrad = ctx.createLinearGradient(0, horizon - 2, 0, horizon + 2);
+  horizonGrad.addColorStop(0, 'transparent');
+  horizonGrad.addColorStop(0.5, '#00f0ff');
+  horizonGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = horizonGrad;
+  ctx.fillRect(0, horizon - 2, W, 4);
+
+  ctx.restore();
+}
+
+function drawParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.5; // gravité
+    p.life -= 0.02;
+
+    if (p.life <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+
+    ctx.save();
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.color;
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = p.color;
+    ctx.fillRect(p.x, p.y, 3, 3);
+    ctx.restore();
+  }
+}
+
+function loop() {
+  drawGrid();
+  drawParticles();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ═══════════════════════════════════════════════════════
+// TIMELINE DE LA PUB (15 secondes)
+// ═══════════════════════════════════════════════════════
+
+function flash(intensity = 0.8) {
+  const f = document.getElementById('flash');
+  f.style.transition = 'none';
+  f.style.opacity = intensity;
+  setTimeout(() => {
+    f.style.transition = 'opacity 0.3s';
+    f.style.opacity = '0';
+  }, 50);
+}
+
+const timeline = [
+
+  // 0s : initialiser l'audio au premier click (pas besoin, on force)
+  { t: 0, fn: () => {
+    try { initAudio(); } catch(e) {}
+    // Bass drop intro
+    playBassDrop();
+    spawnParticles(W/2, H/2, 50, '#00f0ff');
+  }},
+
+  // 1s : sous-titre 1 apparaît
+  { t: 1000, fn: () => {
+    const s = document.getElementById('sub1');
+    s.style.transition = 'opacity 0.5s';
+    s.style.opacity = '0.8';
+  }},
+
+  // 2s : whoosh
+  { t: 2000, fn: () => {
+    playWhoosh();
+    document.querySelector('.bar.top').classList.add('show');
+    document.querySelector('.bar.bottom').classList.add('show');
+  }},
+
+  // 3s : premier tir + flash
+  { t: 3000, fn: () => {
+    playGunshot();
+    flash(0.6);
+    spawnParticles(W/2, H/2, 30, '#ff006e');
+  }},
+
+  // 3.4s : deuxième tir
+  { t: 3400, fn: () => { playGunshot(); flash(0.4); } },
+
+  // 3.8s : troisième tir
+  { t: 3800, fn: () => { playGunshot(); flash(0.4); } },
+
+  // 4.2s : rafale rapide
+  { t: 4200, fn: () => { playGunshot(); flash(0.3); } },
+  { t: 4400, fn: () => { playGunshot(); flash(0.3); } },
+  { t: 4600, fn: () => { playGunshot(); flash(0.3); } },
+  { t: 4800, fn: () => { playGunshot(); flash(0.3); } },
+
+  // 5s : cache sous-titre 1, titre arrive
+  { t: 5000, fn: () => {
+    document.getElementById('sub1').style.opacity = '0';
+    const title = document.getElementById('title');
+    title.style.transition = 'opacity 0.6s, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+    title.style.opacity = '1';
+    title.style.transform = 'scale(1) rotate(0deg)';
+    playExplosion();
+    flash(0.5);
+    spawnParticles(W/2, H/2, 80, '#00f0ff');
+  }},
+
+  // 6s : impact métallique
+  { t: 6000, fn: () => { playMetalImpact(); } },
+
+  // 6.5s : tir
+  { t: 6500, fn: () => { playGunshot(); flash(0.4); } },
+
+  // 7s : sous-titre 2
+  { t: 7000, fn: () => {
+    const s = document.getElementById('sub2');
+    s.style.transition = 'opacity 0.5s';
+    s.style.opacity = '1';
+  }},
+
+  // 8s : whoosh + titre commence à disparaître
+  { t: 8000, fn: () => {
+    playWhoosh();
+    document.getElementById('sub2').style.opacity = '0';
+  }},
+
+  // 8.5s : titre s'efface
+  { t: 8500, fn: () => {
+    document.getElementById('title').style.opacity = '0';
+  }},
+
+  // 9s : "DISPONIBLE BIENTÔT" apparaît
+  { t: 9000, fn: () => {
+    const soon = document.getElementById('soon');
+    soon.style.transition = 'opacity 0.8s, letter-spacing 0.8s';
+    soon.style.opacity = '1';
+    soon.style.letterSpacing = '25px';
+    playBassDrop();
+    flash(0.7);
+    spawnParticles(W/2, H/2, 100, '#ff006e');
+  }},
+
+  // 11s : "SUR ANDROID"
+  { t: 11000, fn: () => {
+    const s = document.getElementById('sub3');
+    s.style.transition = 'opacity 0.5s';
+    s.style.opacity = '1';
+  }},
+
+  // 12s : PEGI 16
+  { t: 12000, fn: () => {
+    const p = document.getElementById('pegi');
+    p.style.transition = 'opacity 0.5s';
+    p.style.opacity = '1';
+  }},
+
+  // 13s : dernier tir
+  { t: 13000, fn: () => {
+    playGunshot();
+    flash(0.3);
+  }},
+
+  // 14s : whoosh final
+  { t: 14000, fn: () => { playWhoosh(); } },
+
+  // 15s : fin
+  { t: 15000, fn: () => {
+    console.log('[TRAILER] Terminé');
+  }}
+];
+
+// Lancer la timeline
+timeline.forEach(step => setTimeout(step.fn, step.t));
+
+// Loop après 18s
+setTimeout(() => location.reload(), 18000);
+</script>
+
+</body>
+</html>

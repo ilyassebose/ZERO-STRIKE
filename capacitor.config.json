@@ -1,0 +1,13 @@
+{
+  "appId": "com.ilyasse.zerostrike",
+  "appName": "ZERO STRIKE",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#08080f"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

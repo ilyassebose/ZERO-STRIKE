@@ -1,0 +1,40 @@
+/* ═══════════════════════════════════════════════════════
+   ZERO STRIKE — Transparence WebView pour Filament
+   La WebView doit être transparente pour laisser voir
+   le rendu 3D natif Filament en dessous.
+   ═══════════════════════════════════════════════════════ */
+
+html, body {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Canvas Three.js caché (Filament le remplace) */
+canvas { display: none !important; }
+
+/* Loader et banner restent opaques (cachent le 3D au démarrage) */
+.loader, .banner {
+    background: #08080f !important;
+    background-color: #08080f !important;
+}
+
+/* Modales semi-transparentes */
+.swal-modal {
+    background: rgba(8, 8, 15, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+/* Menus (cover) opaques */
+.cover {
+    background: rgba(8, 8, 15, 0.98) !important;
+}
+
+/* HUD transparent */
+.ui { background: transparent !important; }
+
+/* Images décoratives discrètes */
+img#background, img#sidebar, img#heading0 {
+    opacity: 0.3 !important;
+    filter: invert(1) hue-rotate(180deg) drop-shadow(0 0 10px #00f0ff) !important;
+}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ZERO STRIKE</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:transparent!important;overflow:hidden;font-family:'Orbitron',Arial;color:#fff;touch-action:none;position:fixed;inset:0}
+
+/* ═══ MENU ═══ */
+#menu{position:fixed;inset:0;z-index:200;background:linear-gradient(135deg,rgba(8,8,15,.95),rgba(20,20,40,.95));backdrop-filter:blur(30px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
+#menu h1{font-size:clamp(32px,10vw,64px);letter-spacing:clamp(6px,3vw,16px);text-shadow:0 0 30px #00f0ff,0 0 60px #00f0ff;margin-bottom:20px;text-align:center}
+#menu button{width:min(300px,80vw);padding:16px 24px;font-size:clamp(13px,4vw,16px);font-weight:900;background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);border-radius:20px;color:#fff;letter-spacing:2px;text-shadow:0 0 10px #00f0ff;cursor:pointer;transition:all .3s;font-family:inherit}
+#menu button:active{transform:scale(.96)}
+#menu button.green{border-color:#00ff88;text-shadow:0 0 10px #00ff88}
+#menu button.pink{border-color:#ff006e;text-shadow:0 0 10px #ff006e}
+#myip{margin-top:20px;font-size:12px;color:#00f0ff;letter-spacing:2px;padding:12px;background:rgba(0,0,0,.5);border-radius:12px;border:1px solid rgba(0,240,255,.3);text-align:center;max-width:90vw}
+#joinBox{display:none;flex-direction:column;gap:10px;align-items:center;background:rgba(0,0,0,.5);padding:20px;border-radius:16px;border:1px solid rgba(255,0,110,.3)}
+#ipInput{padding:12px 16px;font-size:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#fff;width:min(240px,70vw);text-align:center;font-family:monospace}
+#status{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 16px;background:rgba(0,0,0,.7);border-radius:12px;border:1px solid rgba(0,240,255,.3);font-size:12px;color:#00f0ff;display:none;z-index:300;max-width:90vw;text-align:center}
+
+/* ═══ HUD EN JEU ═══ */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:100;display:none}
+.health{position:absolute;top:calc(env(safe-area-inset-top) + 15px);left:15px;width:min(200px,50vw);height:22px;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.3);border-radius:12px;overflow:hidden}
+.health-fill{height:100%;width:100%;background:linear-gradient(90deg,#ff006e,#00f0ff);transition:width .3s}
+.ammo{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 130px);right:20px;padding:10px 20px;background:rgba(0,0,0,.6);backdrop-filter:blur(10px);border:2px solid rgba(0,240,255,.5);border-radius:14px;font-size:clamp(18px,5vw,24px);font-weight:900;color:#00f0ff;text-shadow:0 0 15px #00f0ff}
+.crosshair{position:absolute;top:50%;left:50%;width:10px;height:10px;margin:-5px 0 0 -5px;background:#00f0ff;border-radius:50%;box-shadow:0 0 15px #00f0ff,0 0 30px #00f0ff;pointer-events:none}
+.kill-feed{position:absolute;top:calc(env(safe-area-inset-top) + 60px);right:15px;display:flex;flex-direction:column;gap:6px;max-width:60vw}
+.kill-item{background:rgba(0,0,0,.6);backdrop-filter:blur(10px);border:2px solid rgba(0,240,255,.5);border-radius:10px;padding:8px 12px;font-size:clamp(11px,3vw,14px);font-weight:700;display:flex;gap:8px;align-items:center;animation:si .3s}
+.kill-item.hs{border-color:#ff006e;box-shadow:0 0 20px #ff006e}
+@keyframes si{from{transform:translateX(300px);opacity:0}}
+@keyframes so{to{transform:translateX(300px);opacity:0}}
+
+/* ═══ CONTRÔLES MINECRAFT MOBILE ═══ */
+#controls{position:fixed;inset:0;z-index:150;pointer-events:none;display:none}
+
+/* Joystick gauche */
+#joy{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 30px);left:30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.25);pointer-events:auto;touch-action:none}
+#joy-knob{position:absolute;top:50%;left:50%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:radial-gradient(circle,rgba(0,240,255,.9),rgba(0,240,255,.5));box-shadow:0 0 20px #00f0ff;transition:transform .05s}
+#joy-hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 175px);left:50px;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:2px;pointer-events:none}
+
+/* Boutons droite */
+.btn-action{position:absolute;right:30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;pointer-events:auto;touch-action:none;text-shadow:0 0 10px #00f0ff;font-family:inherit;letter-spacing:1px;transition:transform .08s,background .08s}
+.btn-action:active{transform:scale(.9);background:rgba(0,240,255,.3);box-shadow:0 0 30px #00f0ff}
+.btn-action .icon{font-size:26px}
+
+#btn-shoot{bottom:calc(env(safe-area-inset-bottom) + 130px);right:30px;width:100px;height:100px;background:rgba(255,0,110,.2);border-color:#ff006e;box-shadow:0 0 20px rgba(255,0,110,.4)}
+#btn-shoot:active{background:rgba(255,0,110,.5);box-shadow:0 0 40px #ff006e}
+#btn-jump{bottom:calc(env(safe-area-inset-bottom) + 240px);right:30px;background:rgba(0,255,136,.15);border-color:#00ff88}
+#btn-reload{bottom:calc(env(safe-area-inset-bottom) + 30px);right:30px;background:rgba(255,165,0,.15);border-color:#ffa500}
+
+/* Zone de regard droite */
+#lookzone{position:absolute;top:0;right:0;bottom:0;width:55%;pointer-events:auto;touch-action:none}
+
+/* Bouton pause */
+#btn-pause{position:absolute;top:calc(env(safe-area-inset-top) + 15px);right:15px;width:50px;height:50px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;pointer-events:auto;touch-action:none}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <h1>ZERO STRIKE</h1>
+  <button onclick="startSolo()">▶ JOUER SOLO</button>
+  <button class="green" onclick="hostLocal()">🌐 HOSTER PARTIE</button>
+  <button class="pink" onclick="showJoin()">🔗 REJOINDRE</button>
+  <div id="joinBox">
+    <input id="ipInput" placeholder="192.168.1.42" inputmode="numeric" />
+    <button onclick="joinLocal()">CONNECTER</button>
+  </div>
+  <div id="myip">Votre IP : <span id="ipval">...</span></div>
+</div>
+
+<div id="hud">
+  <div class="health"><div class="health-fill" id="hp"></div></div>
+  <div class="ammo"><span id="ammo">30</span> / 120</div>
+  <div class="crosshair"></div>
+  <div class="kill-feed" id="kf"></div>
+</div>
+
+<div id="controls">
+  <div id="joy">
+    <div id="joy-knob"></div>
+  </div>
+  <div id="joy-hint">DÉPLACEMENT</div>
+  <button class="btn-action" id="btn-shoot" onclick="doShoot()"><span class="icon">🔫</span></button>
+  <button class="btn-action" id="btn-jump" onclick="doJump()"><span class="icon">⬆</span></button>
+  <button class="btn-action" id="btn-reload" onclick="doReload()"><span class="icon">🔄</span></button>
+  <div id="lookzone"></div>
+  <div id="btn-pause" onclick="pauseGame()">⏸</div>
+</div>
+
+<div id="status"></div>
+
+<script>
+var ICONS = {'HEADSHOT':'🎯','KILL':'💀','DOUBLE KILL':'⚡','TRIPLE KILL':'🔥'};
+var XP = {'HEADSHOT':15,'KILL':10,'DOUBLE KILL':25,'TRIPLE KILL':50};
+var isNative = typeof window.Android !== 'undefined';
+
+if (isNative && window.Android.getLocalIp) {
+  try { document.getElementById('ipval').textContent = window.Android.getLocalIp(); }
+  catch(e) {}
+}
+
+function showHud(){
+  document.getElementById('menu').style.display='none';
+  document.getElementById('hud').style.display='block';
+  document.getElementById('controls').style.display='block';
+  initJoystick();
+  initLookZone();
+}
+function startSolo(){ showHud(); if(isNative) window.Android.startGame(); }
+function hostLocal(){ showHud(); showStatus('🌐 Serveur démarré — Attente...'); if(isNative) window.Android.hostLocalGame(); }
+function showJoin(){
+  var b = document.getElementById('joinBox');
+  b.style.display = b.style.display === 'flex' ? 'none' : 'flex';
+}
+function joinLocal(){
+  var ip = document.getElementById('ipInput').value.trim();
+  if(!ip){ alert('Entre l\'IP'); return; }
+  showHud();
+  showStatus('🔗 Connexion à '+ip+'...');
+  if(isNative) window.Android.joinLocalGame(ip);
+}
+function doShoot(){ if(isNative) window.Android.shoot(); }
+function doJump(){ if(isNative) window.Android.jump(); }
+function doReload(){ if(isNative) window.Android.reload(); }
+function pauseGame(){ if(confirm('Quitter la partie ?')) location.reload(); }
+
+function showStatus(msg){
+  var s = document.getElementById('status');
+  s.textContent = msg;
+  s.style.display = 'block';
+  setTimeout(function(){ s.style.opacity = '0.5'; }, 3000);
+}
+
+// ═══ JOYSTICK VIRTUEL ═══
+function initJoystick(){
+  var joy = document.getElementById('joy');
+  var knob = document.getElementById('joy-knob');
+  var active = false;
+  var startX = 0, startY = 0;
+  var maxDist = 45;
+
+  function start(e){
+    e.preventDefault();
+    var t = e.touches ? e.touches[0] : e;
+    active = true;
+    var r = joy.getBoundingClientRect();
+    startX = r.left + r.width / 2;
+    startY = r.top + r.height / 2;
+    move(e);
+  }
+
+  function move(e){
+    if(!active) return;
+    e.preventDefault();
+    var t = e.touches ? e.touches[0] : e;
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
+    var dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist > maxDist){ dx = dx / dist * maxDist; dy = dy / dist * maxDist; }
+    knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    // Normalise -1 à 1
+    var nx = dx / maxDist;
+    var ny = dy / maxDist;
+    if(isNative) window.Android.move(nx, ny);
+  }
+
+  function end(e){
+    active = false;
+    knob.style.transform = 'translate(0,0)';
+    if(isNative) window.Android.move(0, 0);
+  }
+
+  joy.addEventListener('touchstart', start, {passive:false});
+  joy.addEventListener('touchmove', move, {passive:false});
+  joy.addEventListener('touchend', end);
+  joy.addEventListener('touchcancel', end);
+  joy.addEventListener('mousedown', start);
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', end);
+}
+
+// ═══ ZONE DE REGARD (droite) ═══
+function initLookZone(){
+  var zone = document.getElementById('lookzone');
+  var active = false;
+  var lastX = 0, lastY = 0;
+
+  function start(e){
+    e.preventDefault();
+    var t = e.touches ? e.touches[0] : e;
+    active = true;
+    lastX = t.clientX; lastY = t.clientY;
+  }
+  function move(e){
+    if(!active) return;
+    e.preventDefault();
+    var t = e.touches ? e.touches[0] : e;
+    var dx = t.clientX - lastX;
+    var dy = t.clientY - lastY;
+    lastX = t.clientX; lastY = t.clientY;
+    // Le natif fait déjà la rotation via sa propre détection touch
+    // On ne fait rien ici, la SurfaceView gère
+  }
+  function end(){ active = false; }
+
+  zone.addEventListener('touchstart', start, {passive:false});
+  zone.addEventListener('touchmove', move, {passive:false});
+  zone.addEventListener('touchend', end);
+}
+
+window.onKill = function(type, victim){
+  type = (type || 'KILL').toUpperCase();
+  var feed = document.getElementById('kf');
+  var el = document.createElement('div');
+  el.className = 'kill-item' + (type === 'HEADSHOT' ? ' hs' : '');
+  el.innerHTML = '<span style="font-size:18px">' + (ICONS[type]||'💀') + '</span>' +
+    '<span>' + type + '</span>' +
+    '<span style="margin-left:auto;color:#00f0ff;font-weight:900">+' + (XP[type]||10) + ' XP</span>';
+  feed.appendChild(el);
+  while (feed.children.length > 5) feed.removeChild(feed.firstChild);
+  setTimeout(function(){
+    el.style.animation = 'so 0.5s forwards';
+    setTimeout(function(){ el.remove(); }, 500);
+  }, 3000);
+};
+
+window.onNetworkEvent = function(type, data){
+  if(type === 'connected') showStatus('✅ Connecté : ' + data);
+  else if(type === 'disconnected') showStatus('❌ Déconnecté');
+  else if(type === 'error') showStatus('⚠️ Erreur : ' + data);
+};
+
+console.log('[ZERO STRIKE] UI prête');
+</script>
+</body>
+</html>
