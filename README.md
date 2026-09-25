@@ -1,118 +1,239 @@
 <div align="center">
-⚡ ZERO STRIKE
-FPS 3D multijoueur propulsé par Google Filament
-https://github.com/ilyassebose/ZERO-STRIKE/actions/workflows/build-apk.yml/badge.svg
-https://img.shields.io/github/v/release/ilyassebose/ZERO-STRIKE?color=00f0ff
-https://img.shields.io/github/downloads/ilyassebose/ZERO-STRIKE/total?color=ff006e
-https://img.shields.io/badge/license-MIT-00f0ff
-https://img.shields.io/badge/PEGI-16-ff006e
 
-📥 TÉLÉCHARGER · 🐛 BUGS
+# ZERO STRIKE
+
+**FPS 3D tactique multijoueur pour Android**
+
+[![Build](https://img.shields.io/github/actions/workflow/status/ilyassebose/ZERO-STRIKE/build.yml?style=flat-square&label=build)](https://github.com/ilyassebose/ZERO-STRIKE/actions)
+[![Release](https://img.shields.io/github/v/release/ilyassebose/ZERO-STRIKE?style=flat-square&label=release)](https://github.com/ilyassebose/ZERO-STRIKE/releases)
+[![Downloads](https://img.shields.io/github/downloads/ilyassebose/ZERO-STRIKE/total?style=flat-square&label=downloads)](https://github.com/ilyassebose/ZERO-STRIKE/releases)
+[![License](https://img.shields.io/github/license/ilyassebose/ZERO-STRIKE?style=flat-square&label=license)](LICENSE)
+[![PEGI](https://img.shields.io/badge/PEGI-16-red?style=flat-square)](https://pegi.info)
+
+Un FPS mobile nerveux, pensé pour le jeu en réseau local. Pas de serveurs distants, pas de latence : tu lances une partie, tes amis rejoignent en WiFi, et ça tire.
+
+[Releases](https://github.com/ilyassebose/ZERO-STRIKE/releases) · [Issues](https://github.com/ilyassebose/ZERO-STRIKE/issues) · [Signaler un bug](https://github.com/ilyassebose/ZERO-STRIKE/issues/new)
 
 </div>
-🔥 C'EST QUOI ?
-ZERO STRIKE est un FPS 3D multijoueur mobile, développé from scratch par un seul dev, propulsé par le moteur Google Filament.
 
-Un vrai FPS. Sur ton téléphone. Gratuit. Sans pub. Sans compte.
+---
 
-✨ FONCTIONNALITÉS
-🎮 Gameplay	🌐 Multijoueur	🎨 Graphique
-FPS 3D tactique	WiFi local	Moteur Filament
-Manette Xbox/PS	Jusqu'à 8 joueurs	Éclairage PBR
-Contrôles mobiles	Serveur intégré	Pluie temps réel
-5 bots IA	Sans serveur distant	60 FPS stable
-📥 INSTALLATION
-Étape 1 — Télécharge l'APK
+## Sommaire
 
-👉 ⬇️ TÉLÉCHARGER (clique sur ZERO-STRIKE-vX.X.X.apk)
+- [À propos](#à-propos)
+- [Fonctionnalités](#fonctionnalités)
+- [Installation](#installation)
+- [Contrôles](#contrôles)
+- [Multijoueur](#multijoueur)
+- [Stack technique](#stack-technique)
+- [Compilation](#compilation)
+- [FAQ](#faq)
+- [Licence](#licence)
 
-Étape 2 — Autorise les sources inconnues
+---
 
-Paramètres → Sécurité → Sources inconnues → ✅ ACTIVER
+## À propos
 
-Étape 3 — Installe
+**ZERO STRIKE** est un FPS 3D tactique pour Android, développé en solo par [ilyassebose](https://github.com/ilyassebose). Il mise sur le rendu réaliste via **Google Filament** et sur le jeu en **réseau local WiFi**, sans dépendre d'un serveur externe.
 
-Ouvre le fichier .apk → INSTALLER → LANCE LE JEU 🎮
+Le projet est open source sous licence MIT. Les mises à jour sont distribuées directement via GitHub Releases, avec un système d'auto-update intégré à l'application.
 
-🎮 CONTRÔLES
-🕹️ Tactile
-Contrôle	Action
-Joystick gauche	Se déplacer
-Glisser droite	Regarder
-🔫 Bouton rouge	Tirer
-⬆️ Bouton vert	Sauter
-🔄 Bouton orange	Recharger
-🎮 Manette
-Manette	Action
-Joystick gauche	Déplacement
-Joystick droit	Visée
-RT / R2	Tirer
-A / Croix	Sauter
-🌐 MULTIJOUEUR LOCAL
-Joue avec tes potes sur le même WiFi, sans internet.
+---
 
-Hoster une partie :
+## Fonctionnalités
 
-Tous les tél sur le MÊME WiFi
+| Fonctionnalité | Description |
+|---|---|
+| **FPS 3D tactique** | Gameplay nerveux, visée précise, maps pensées pour le combat rapproché |
+| **Multijoueur WiFi local** | Jusqu'à **8 joueurs** sur le même réseau, sans serveur distant |
+| **Serveur intégré** | Un joueur héberge la partie via un serveur WebSocket embarqué |
+| **5 bots IA** | Bots autonomes pour compléter les équipes ou s'entraîner seul |
+| **Support manette** | Compatible manettes Xbox et PlayStation (Bluetooth / USB) |
+| **Contrôles tactiles** | Joystick virtuel et gestes style Minecraft mobile |
+| **Éclairage PBR** | Rendu physique réaliste via Google Filament |
+| **Pluie temps réel** | Effets météo dynamiques en jeu |
+| **Kill feed avec XP** | Suivi des éliminations et progression par points d'expérience |
+| **Auto-update** | Mise à jour automatique via l'API GitHub Releases |
+| **60 FPS stable** | Optimisé pour une fluidité constante sur mobile |
 
-Lance ZERO STRIKE
+---
 
-Clique 🌐 HOSTER PARTIE
+## Installation
 
-Partage ton IP (ex: 192.168.1.42)
+1. Rends-toi sur la page [**Releases**](https://github.com/ilyassebose/ZERO-STRIKE/releases).
+2. Télécharge le fichier **`.apk`** de la dernière version.
+3. Sur ton appareil Android, autorise l'installation depuis **des sources inconnues** :
+   - `Paramètres` → `Sécurité` → `Sources inconnues` (ou `Installer des applis inconnues` selon la version d'Android).
+4. Ouvre le fichier APK téléchargé et installe-le.
+5. Lance **ZERO STRIKE** depuis ton tiroir d'applications.
 
-Rejoindre :
+> **Prérequis :** Android 8.0 (API 26) ou supérieur, GPU compatible Vulkan ou OpenGL ES 3.1.
 
-Lance ZERO STRIKE
+---
 
-Clique 🔗 REJOINDRE
+## Contrôles
 
-Entre l'IP de l'hôte
+### Tactile
 
-CONNECTER 🎮
+| Élément | Action |
+|---|---|
+| **Joystick gauche** | Déplacement du personnage |
+| **Glisser à droite** | Regarder / orienter la caméra |
+| **Bouton tir** | Tirer |
+| **Bouton saut** | Sauter |
+| **Bouton recharger** | Recharger l'arme |
 
-🔄 MISE À JOUR AUTOMATIQUE
-ZERO STRIKE se met à jour tout seul :
+### Manette
 
-Ouvre l'app
+| Bouton | Action |
+|---|---|
+| **Stick gauche** | Déplacement |
+| **Stick droit** | Visée |
+| **RT / R2** | Tirer |
+| **A / Croix** | Sauter |
+| **X / Carré** | Recharger |
 
-Popup "MISE À JOUR DISPONIBLE"
+---
 
-Clique TÉLÉCHARGER
+## Multijoueur
 
-C'est fait ✅
+ZERO STRIKE fonctionne en **réseau local (LAN)** :
 
-🛠️ STACK TECHNIQUE
-Composant	Technologie
-Rendu 3D	Google Filament
-Interface	HTML/CSS/JS (WebView)
-Packaging	Capacitor
-Réseau	WebSocket
-Build	GitHub Actions
-Auto-update	GitHub Releases
-🏗️ DÉVELOPPEMENT
-bash
+1. Un joueur crée une partie : il devient l'**hôte** et lance le serveur WebSocket intégré.
+2. Les autres joueurs rejoignent via l'**adresse IP locale** affichée par l'hôte.
+3. Jusqu'à **8 joueurs** peuvent se connecter simultanément.
+4. Si l'hôte quitte, la partie se termine.
+
+Aucune connexion Internet n'est requise pour jouer en local.
+
+---
+
+## Stack technique
+
+```text
+Rendu 3D        : Google Filament
+Interface       : HTML / CSS / JS dans une WebView
+Packaging       : Capacitor
+Réseau          : WebSocket (Java-WebSocket)
+Build           : GitHub Actions
+Auto-update     : GitHub Releases API
+```
+
+---
+
+## Compilation
+
+### Prérequis
+
+- Android Studio (dernière version stable)
+- JDK 17
+- Android SDK (API 26+)
+- Node.js 18+
+
+### Étapes
+
+```bash
+# Cloner le dépôt
 git clone https://github.com/ilyassebose/ZERO-STRIKE.git
 cd ZERO-STRIKE
+
+# Installer les dépendances
 npm install
+
+# Synchroniser Capacitor
 npx cap sync android
-npx cap open android
-Publier une MAJ :
 
-bash
-./release.sh 1.0.2
-❓ FAQ
-<details> <summary><b>Quelle version Android ?</b></summary> <br>Android 7.0 (API 24) ou plus récent. </details><details> <summary><b>C'est payant ?</b></summary> <br>Non, <b>100% gratuit</b>. Pas de pub, pas de microtransactions. </details><details> <summary><b>Ça marche sans WiFi ?</b></summary> <br>Le mode SOLO oui. Le multijoueur nécessite un WiFi local. </details><details> <summary><b>Quelle manette ?</b></summary> <br>Xbox One/Series, PlayStation 4/5, toute manette Bluetooth. </details><details> <summary><b>Bug trouvé ?</b></summary> <br>Ouvre une <a href="https://github.com/ilyassebose/ZERO-STRIKE/issues">Issue</a>. </details>
-👤 AUTEUR
-Développé avec ❤️ par @ilyassebose
+# Compiler l'APK debug
+cd android
+./gradlew assembleDebug
+```
 
-📄 LICENCE
-Licence MIT — voir LICENSE.
+L'APK généré se trouve dans :
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Pour une build de release signée :
+
+```bash
+./gradlew assembleRelease
+```
+
+---
+
+## FAQ
+
+<details>
+<summary><strong>Le jeu est-il gratuit ?</strong></summary>
+
+Oui. ZERO STRIKE est entièrement gratuit et open source sous licence MIT.
+
+</details>
+
+<details>
+<summary><strong>Faut-il une connexion Internet pour jouer ?</strong></summary>
+
+Non. Le multijoueur fonctionne en **WiFi local**. Internet n'est nécessaire que pour télécharger les mises à jour.
+
+</details>
+
+<details>
+<summary><strong>Combien de joueurs peuvent rejoindre une partie ?</strong></summary>
+
+Jusqu'à **8 joueurs** simultanément sur le même réseau local.
+
+</details>
+
+<details>
+<summary><strong>Puis-je jouer avec une manette ?</strong></summary>
+
+Oui. Les manettes **Xbox** et **PlayStation** sont supportées en Bluetooth ou USB.
+
+</details>
+
+<details>
+<summary><strong>Comment sont distribuées les mises à jour ?</strong></summary>
+
+Via l'**API GitHub Releases**. L'application vérifie automatiquement les nouvelles versions et propose de les installer.
+
+</details>
+
+<details>
+<summary><strong>Sur quels appareils le jeu tourne-t-il ?</strong></summary>
+
+Android 8.0 (API 26) minimum, avec un GPU compatible Vulkan ou OpenGL ES 3.1. Les appareils récents offrent les meilleures performances (60 FPS stables).
+
+</details>
+
+<details>
+<summary><strong>Comment signaler un bug ou proposer une idée ?</strong></summary>
+
+Ouvre une [issue](https://github.com/ilyassebose/ZERO-STRIKE/issues) sur GitHub. Les rapports détaillés (appareil, version Android, étapes de reproduction) sont les bienvenus.
+
+</details>
+
+<details>
+<summary><strong>Le jeu est-il adapté aux enfants ?</strong></summary>
+
+ZERO STRIKE est classé **PEGI 16** en raison de la violence représentée dans un contexte de tir.
+
+</details>
+
+---
+
+## Licence
+
+Distribué sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+
+---
 
 <div align="center">
-⭐ Si tu aimes ZERO STRIKE, mets une étoile !
-https://img.shields.io/github/stars/ilyassebose/ZERO-STRIKE?style=social
 
-🎮 BON JEU ! 🎮
+**ZERO STRIKE** — Développé par [ilyassebose](https://github.com/ilyassebose)
+
+Si le projet te plaît, mets une ⭐ sur le repo.
+
+[Releases](https://github.com/ilyassebose/ZERO-STRIKE/releases) · [Issues](https://github.com/ilyassebose/ZERO-STRIKE/issues) · [Licence MIT](LICENSE)
 
 </div>
